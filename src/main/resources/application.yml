@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: kcdAuthServer
+  datasource:
+    url: jdbc:mysql://localhost:3306/kcd
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 1234
+  sql:
+    init:
+      platform: mysql
+  # Hibernate 설정 - 테이블 자동 생성
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+  # http://localhost:8080/actuator 초기 id 및 비밀번호
+  security:
+    user:
+      name: admin
+      password: password
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      connect-timeout: 2s
+      timeout: 1s
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
