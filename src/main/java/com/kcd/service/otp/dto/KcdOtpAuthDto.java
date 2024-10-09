@@ -13,7 +13,7 @@ import jakarta.validation.constraints.Pattern;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "KCD OPT 인증 Domain", name = "KcdOptAuthDto")
-public class KcdOptAuthDto {
+public class KcdOtpAuthDto {
 
     @Schema(description = "회원 이름", example = "유창근")
     @NotBlank(message = "회원 이름을 입력하여 주십시요.")

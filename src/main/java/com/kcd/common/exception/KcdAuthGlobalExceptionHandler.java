@@ -33,6 +33,7 @@ public class KcdAuthGlobalExceptionHandler {
         KcdAuthResponse<Map<String, String>> response = new KcdAuthResponse<>(
                 Boolean.FALSE,  // 응답이 실패했으므로 false
                 HttpStatus.BAD_REQUEST,  // 상태 코드
+                HttpStatus.BAD_REQUEST.value(),
                 "Validation failed",  // 메시지
                 errors  // 에러 정보
         );
@@ -50,6 +51,7 @@ public class KcdAuthGlobalExceptionHandler {
         KcdAuthResponse<String> response = new KcdAuthResponse<>(
                 Boolean.FALSE,  // 실패 응답
                 HttpStatus.INTERNAL_SERVER_ERROR,  // 상태 코드 500
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "KcdAuthServer AuthException Error",  // 메시지
                 ex.getMessage()  // 에러 세부 정보
         );
@@ -67,6 +69,7 @@ public class KcdAuthGlobalExceptionHandler {
         KcdAuthResponse<String> response = new KcdAuthResponse<>(
                 Boolean.FALSE,  // 실패 응답
                 HttpStatus.INTERNAL_SERVER_ERROR,  // 상태 코드 500
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "KcdAuthServer Domain Error",  // 메시지
                 ex.getMessage()  // 에러 세부 정보
         );

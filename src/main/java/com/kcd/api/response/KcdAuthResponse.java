@@ -18,6 +18,9 @@ public class KcdAuthResponse<T> {
     @Schema(description = "응답 HttpStatus", example = "Ok")
     private final HttpStatus httpStatus;
 
+    @Schema(description = "응답 에러 코드", example = "")
+    private final Integer errorCode;
+
     @Schema(description = "응답 메시지", example = "success")
     private final String message;
 
@@ -25,6 +28,6 @@ public class KcdAuthResponse<T> {
     private final T data;
 
     public KcdAuthResponse(T data) {
-        this(Boolean.TRUE, HttpStatus.OK, "success", data);
+        this(Boolean.TRUE, HttpStatus.OK, null, "success", data);
     }
 }
