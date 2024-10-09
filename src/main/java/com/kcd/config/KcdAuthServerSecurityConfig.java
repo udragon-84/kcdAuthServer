@@ -24,7 +24,7 @@ public class KcdAuthServerSecurityConfig {
                 .httpBasic(withDefaults()) // 기본 HTTP 인증 사용
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers
-                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)  // 같은 출처에서 프레임 허용
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)  // 같은 출처에서 프레임 허용 /h2-console 사용시 필요
                 );
         return http.build();
     }

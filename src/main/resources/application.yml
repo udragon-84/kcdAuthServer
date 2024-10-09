@@ -18,11 +18,11 @@ spring:
       ddl-auto: none
     show-sql: true
 
-  # http://localhost:8080/actuator 초기 id 및 비밀번호
+  # http://localhost:8080/actuator 초기 id 및 비밀번호 (admin/password)
   security:
     user:
       name: admin
-      password: password
+      password: "$2a$10$w45kxbj2Cf4Utr.KKjdr1uuqP1/MDcJXbn0JPxpp9VIG5MVA.oG2K"
   data:
     redis:
       host: localhost
@@ -30,6 +30,11 @@ spring:
       database: 0
       connect-timeout: 2s
       timeout: 1s
+      lettuce:
+        pool:
+          max-active: 10
+          max-idle: 10
+          min-idle: 0
 
 springdoc:
   api-docs:
