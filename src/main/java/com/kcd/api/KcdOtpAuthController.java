@@ -2,14 +2,17 @@ package com.kcd.api;
 
 import com.kcd.api.response.KcdAuthResponse;
 import com.kcd.common.exception.AuthException;
+import com.kcd.service.oauth2.RoleService;
 import com.kcd.service.otp.KcdOtpAuthService;
 import com.kcd.service.otp.dto.KcdOtpAuthDto;
 import com.kcd.service.otp.dto.KcdOtpVerficationDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,9 @@ public class KcdOtpAuthController {
 
     @Autowired
     private KcdOtpAuthService kcdOtpAuthService;
+
+    @Autowired
+    private RoleService roleService;
 
     @Operation(summary = "Opt 발급 Api", description = "Opt 발급 Api")
     @PostMapping("/issue")
@@ -62,9 +68,25 @@ public class KcdOtpAuthController {
                     value = "{ \"id\": \"010-1234-5678\", " +
                             "\"otp\": \"710430\" }"
             )))
-            @Validated @RequestBody KcdOtpVerficationDto kcdOtpVerficationDto) {
+            @Validated @RequestBody KcdOtpVerficationDto kcdOtpVerficationDto, HttpServletRequest request) {
         log.info("KcdOtpAuthController.otpVerification kcdOptVerficationDto: {}", kcdOtpVerficationDto);
-        return new KcdAuthResponse<>(this.kcdOtpAuthService.verifyOtp(kcdOtpVerficationDto));
+
+        String result = this.kcdOtpAuthService.verifyOtp(kcdOtpVerficationDto);
+
+        // 에러가 없다면 spring security ROLE_USER 권한 부여
+        roleService.addRoleUser(request);
+
+        return new KcdAuthResponse<>(result);
+    }
+
+    @Operation(summary = "Opt 검증 후 발급된 Role 삭제 Api", description = "Opt 검증 후 발급된 Role 삭제 Api")
+    @GetMapping("/delete/role")
+    public KcdAuthResponse<Boolean> deleteRole(
+            @Parameter(description = "삭제할 RoleName ex: ROLE_USER", name = "roleName")
+            @RequestParam(name="roleName", required = true, defaultValue = "ROLE_USER") String roleName ,
+            HttpServletRequest request) {
+        this.roleService.deleteRole(roleName, request);
+        return new KcdAuthResponse<>(Boolean.TRUE);
     }
 
     private void parameterValidation(KcdOtpAuthDto kcdOtpAuthDto) {

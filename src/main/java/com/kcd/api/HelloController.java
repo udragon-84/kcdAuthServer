@@ -12,9 +12,15 @@ public class HelloController {
     @Value("${server.port}")
     private int serverPort;
 
+    @Value("${CLIENT_ID}")
+    private String clientId;
+
+    @Value("${CLIENT_SECRET}")
+    private String clientSecret;
+
     @GetMapping(value = "/hello")
     public String hello() {
         log.info("Hello World");
-        return "hello serverPort: " + this.serverPort;
+        return "hello serverPort: " + this.serverPort + ", clientId: " + this.clientId + ", clientSecret: " + this.clientSecret;
     }
 }

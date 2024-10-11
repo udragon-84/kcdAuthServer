@@ -1,9 +1,13 @@
 package com.kcd.common.exception;
 
 import com.kcd.api.response.KcdAuthResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -75,5 +79,30 @@ public class KcdAuthGlobalExceptionHandler {
         );
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    /**
+     * 그 외 나머지 Exception 처리
+     * @param ex Exception 에러 정보
+     * @return {@link ResponseEntity<KcdAuthResponse>}
+     */
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<KcdAuthResponse<String>> accessDeniedException(AuthorizationDeniedException ex, HttpServletRequest request) {
+        // HTTP 요청에서 URI 정보 추출
+        String requestUri = request.getRequestURI();  // 요청 URI
+
+        Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+        currentAuth.getAuthorities().forEach(auth -> log.error("KcdAuthGlobalExceptionHandler.accessDeniedException Exception currentAuthority : {}", auth.getAuthority()));
+        log.error("KcdAuthGlobalExceptionHandler.accessDeniedException - URI: {}, Error: {}", requestUri, ex.getMessage());
+
+        KcdAuthResponse<String> response = new KcdAuthResponse<>(
+                Boolean.FALSE,  // 실패 응답
+                HttpStatus.FORBIDDEN,  // 상태 코드 500
+                HttpStatus.FORBIDDEN.value(),
+                "Access denied in for URI: " + requestUri,
+                ex.getMessage() // 에러 세부 정보
+        );
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
 
 }
