@@ -1,6 +1,8 @@
 package com.kcd.config;
 
-import com.kcd.service.oauth2.CustomOAuth2UserService;
+import com.kcd.service.oauth2.OAuth2CustomUserService;
+import com.kcd.service.oauth2.OAuth2LoginFailHandler;
+import com.kcd.service.oauth2.OAuth2LoginSuccessHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,10 +14,7 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -25,12 +24,19 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class KcdAuthServerSecurityConfig {
 
     @Autowired
-    private CustomOAuth2UserService oauth2UserComponent;
+    private OAuth2CustomUserService oAuth2CustomUserService;
+
+    @Autowired
+    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+
+    @Autowired
+    private OAuth2LoginFailHandler oAuth2LoginFailHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/actuator/**").authenticated() // actuator 엔드포인트 인증 필요 admin/password
+                        //.requestMatchers("/actuator/**").authenticated() // actuator 엔드포인트 인증 필요 admin/password
+                        .requestMatchers("/actuator/**").permitAll() // actuator 엔드포인트 인증 필요 admin/password
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/login", "/oauth2/**", "/signup").permitAll()
                         .requestMatchers("/register").hasRole("USER") //회원 가입 같은 경우는 ROLE_USER를 획득한 경우에만 접근 가능
@@ -43,9 +49,10 @@ public class KcdAuthServerSecurityConfig {
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)  // 같은 출처에서 프레임 허용 /h2-console 사용시 필요
                 )
                 .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oAuth2LoginSuccessHandler)
+                        .failureHandler(oAuth2LoginFailHandler)
                         .userInfoEndpoint(userInfo -> userInfo
-                                .userService(oauth2UserComponent))
-                        .defaultSuccessUrl("/signup",true));
+                                .userService(oAuth2CustomUserService)));
         return http.build();
     }
 

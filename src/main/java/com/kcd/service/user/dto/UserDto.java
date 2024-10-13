@@ -1,10 +1,13 @@
-package com.kcd.service.otp.dto;
+package com.kcd.service.user.dto;
 
+import com.kcd.common.encrypt.Aes128Encryptor;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import lombok.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Builder
 @ToString
@@ -12,8 +15,11 @@ import jakarta.validation.constraints.Pattern;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "KCD OPT 인증 Domain", name = "KcdOptAuthDto")
-public class KcdOtpAuthDto {
+@Schema(description = "kcd 유저 정보 Domain", name = "UserDto")
+public class UserDto extends Aes128Encryptor {
+
+    @Schema(description = "kcd 회원 관리 내부 id", example = "1")
+    private Long id;
 
     @Schema(description = "회원 이름", example = "유창근")
     @NotBlank(message = "회원 이름을 입력하여 주십시요.")
@@ -29,6 +35,9 @@ public class KcdOtpAuthDto {
     @Schema(description = "회원 이메일", example = "youzang7@gmail.com")
     @Email(message = "이메일 형식을 올바르게 입력하여 주십시요.")
     private String email;   // 이메일로 점유인증 하는 경우
+
+    @Schema(description = "회원 패스워드", example = "*********")
+    private String password;   // 이메일로 점유인증 하는 경우
 
     @Schema(description = "생년월일", example = "841021")
     @NotBlank(message = "생년월일을 입력하여 주십시요.")
@@ -53,5 +62,28 @@ public class KcdOtpAuthDto {
     @Schema(description = "본인인증 기관", example = "KAKAO")
     @NotBlank(message = "본인인증 기관을 입력하여 주십시요.")
     private String provider; // 본인인증 기관
+
+    @Schema(description = "회원등록 일자", example = "2024-10-11T11:55:56")
+    private LocalDateTime createdAt;  // 등록일
+
+    @Override
+    public void encryptFields() {
+        this.processFields(true);
+    }
+
+    @Override
+    public void decryptFields() {
+        this.processFields(false);
+    }
+
+    private void processFields(boolean isEncrypt) {
+        this.mobile = this.processField(this.mobile, isEncrypt);
+        this.email = this.processField(this.email, isEncrypt);
+        this.password = this.processField(this.password, isEncrypt);
+        this.birthday = this.processField(this.birthday, isEncrypt);
+        this.rrn7th = this.processField(this.rrn7th, isEncrypt);
+        this.gender = this.processField(this.gender, isEncrypt);
+        this.nationality = this.processField(this.nationality, isEncrypt);
+    }
 
 }

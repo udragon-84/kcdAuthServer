@@ -81,7 +81,7 @@ public class KcdAuthGlobalExceptionHandler {
     }
 
     /**
-     * 그 외 나머지 Exception 처리
+     * Controller api 호출 시 권한 Exception 처리
      * @param ex Exception 에러 정보
      * @return {@link ResponseEntity<KcdAuthResponse>}
      */
@@ -104,5 +104,42 @@ public class KcdAuthGlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
+    /**
+     * EncryptionException 암호화 처리 Exception
+     * @param ex EncryptionException 에러 정보
+     * @return {@link ResponseEntity<KcdAuthResponse>}
+     */
+    @ExceptionHandler(EncryptionFailedException.class)
+    public ResponseEntity<KcdAuthResponse<String>> handleEncryptionException(EncryptionFailedException ex) {
+        log.error("GlobalExceptionHandler.handleEncryptionException", ex);
+
+        KcdAuthResponse<String> response = new KcdAuthResponse<>(
+                Boolean.FALSE,  // 실패 응답
+                HttpStatus.INTERNAL_SERVER_ERROR,  // 상태 코드 400
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "암호화 처리 중 오류가 발생했습니다.",  // 사용자 메시지
+                ex.getMessage()  // 에러 세부 정보
+        );
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * DecryptionException 복호화 처리 Exception
+     * @param ex DecryptionException 에러 정보
+     * @return {@link ResponseEntity<KcdAuthResponse>}
+     */
+    @ExceptionHandler(DecryptionFailedException.class)
+    public ResponseEntity<KcdAuthResponse<String>> handleDecryptionException(DecryptionFailedException ex) {
+        log.error("GlobalExceptionHandler.handleDecryptionException", ex);
+
+        KcdAuthResponse<String> response = new KcdAuthResponse<>(
+                Boolean.FALSE,  // 실패 응답
+                HttpStatus.INTERNAL_SERVER_ERROR,  // 상태 코드 400
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "복호화 처리 중 오류가 발생했습니다.",  // 사용자 메시지
+                ex.getMessage()  // 에러 세부 정보
+        );
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
 }

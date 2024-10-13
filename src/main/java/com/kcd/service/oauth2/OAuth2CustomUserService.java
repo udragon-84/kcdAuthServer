@@ -16,7 +16,7 @@ import java.util.*;
 
 @Slf4j
 @Service
-public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+public class OAuth2CustomUserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -25,6 +25,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         KakaoOAuth2ResponseDto kakaoOAuth2ResponseDto = Optional.ofNullable(oAuth2UserAttributes)
                 .map(OAuth2UserAttributesConvert::convert)
+                .stream()
+                .peek(KakaoOAuth2ResponseDto::encryptFields) //받아온 값은 바로 암호화 처리
+                .findAny()
                 .orElseThrow(() -> new AuthException("Kakao oAuth2 유저 정보가 없습니다."));
 
         Map<String, Object> newAttributes = new HashMap<>();
@@ -32,10 +35,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         newAttributes.put("id", kakaoOAuth2ResponseDto.getId());
         newAttributes.put("connected_at", kakaoOAuth2ResponseDto.getConnectedAt());
 
-        log.info("CustomOAuth2UserService.loadUser: {}", newAttributes);
+        String role = kakaoOAuth2ResponseDto.getEmail().isBlank() && kakaoOAuth2ResponseDto.getPhoneNumber().isBlank() ?
+                "ROLE_ANONYMOUS" : "ROLE_USER";
 
         return new DefaultOAuth2User(
-                List.of(new SimpleGrantedAuthority("ROLE_USER")),
+                List.of(new SimpleGrantedAuthority(role)),
                 newAttributes,
                 "id"
         );
