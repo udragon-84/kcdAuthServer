@@ -2,7 +2,6 @@ package com.kcd.repository.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 
 @ToString

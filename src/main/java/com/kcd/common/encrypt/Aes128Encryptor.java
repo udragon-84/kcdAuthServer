@@ -16,8 +16,8 @@ public abstract class Aes128Encryptor {
     private static final String SECRET_KEY;
 
     static {
-        ALGORITHM = "AES"; // System.getenv("AES_KEY");  // AES
-        SECRET_KEY = "0123456789abcdef"; // System.getenv("SECRET_KEY");  // 16바이트 키 값 (AES-128용)
+        ALGORITHM = System.getenv("AES_KEY");  // AES
+        SECRET_KEY = System.getenv("SECRET_KEY");  // 16바이트 키 값 (AES-128용)
 
         if (ALGORITHM == null || SECRET_KEY == null) {
             throw new IllegalArgumentException("Aes128Encryptor init static 환경 변수 AES_KEY 또는 SECRET_KEY가 설정되지 않았습니다.");

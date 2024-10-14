@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Schema(description = "Kakao oAuth2 응답 도메인", name = "KakaoOAuth2ResponseDto")
 public class KakaoOAuth2ResponseDto extends Aes128Encryptor {
+
     @Schema(description = "Kakao oAuth2 응답 id", example = "356324343")
     private Long id;
 

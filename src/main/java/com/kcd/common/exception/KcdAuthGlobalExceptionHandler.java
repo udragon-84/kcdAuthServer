@@ -63,6 +63,24 @@ public class KcdAuthGlobalExceptionHandler {
     }
 
     /**
+     * 회원 중복 에러 Exception 처리 핸들러
+     * @param ex auth 도메인 에러 정보
+     * @return {@link ResponseEntity<KcdAuthResponse>}
+     */
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<KcdAuthResponse<String>> userAlreadyExistsHandleException(UserAlreadyExistsException ex) {
+        log.error("KcdAuthGlobalExceptionHandler.userAlreadyExistsHandleException:", ex);
+        KcdAuthResponse<String> response = new KcdAuthResponse<>(
+                Boolean.FALSE,  // 실패 응답
+                HttpStatus.INTERNAL_SERVER_ERROR,  // 상태 코드 500
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "KcdAuthServer UserAlreadyExistsException Error",  // 메시지
+                ex.getMessage()  // 에러 세부 정보
+        );
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
      * 그 외 나머지 Exception 처리
      * @param ex Exception 에러 정보
      * @return {@link ResponseEntity<KcdAuthResponse>}

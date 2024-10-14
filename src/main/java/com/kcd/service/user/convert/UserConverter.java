@@ -1,7 +1,7 @@
 package com.kcd.service.user.convert;
-
 import com.kcd.repository.user.entity.UserEntity;
 import com.kcd.service.user.dto.UserDto;
+import java.time.LocalDateTime;
 
 public class UserConverter {
     public static UserDto toDomain(UserEntity userEntity) {
@@ -18,6 +18,22 @@ public class UserConverter {
                 .tsp(userEntity.getTsp())
                 .provider(userEntity.getProvider())
                 .createdAt(userEntity.getCreatedAt())
+                .build();
+    }
+
+    public static UserEntity toEntity(UserDto userDto) {
+        return UserEntity.builder()
+                .name(userDto.getName())
+                .mobile(userDto.getMobile())
+                .email(userDto.getEmail())
+                .password(userDto.getPassword())
+                .birthday(userDto.getBirthday())
+                .rrn7th(userDto.getRrn7th())
+                .gender(userDto.getGender())
+                .nationality(userDto.getNationality())
+                .tsp(userDto.getTsp())
+                .provider(userDto.getProvider())
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 }

@@ -37,6 +37,7 @@ public class UserDto extends Aes128Encryptor {
     private String email;   // 이메일로 점유인증 하는 경우
 
     @Schema(description = "회원 패스워드", example = "*********")
+    @NotBlank(message = "회원 비밀번호를 입력하여 주십시요.")
     private String password;   // 이메일로 점유인증 하는 경우
 
     @Schema(description = "생년월일", example = "841021")

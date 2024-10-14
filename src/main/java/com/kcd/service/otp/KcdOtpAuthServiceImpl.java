@@ -3,8 +3,8 @@ package com.kcd.service.otp;
 import com.kcd.common.exception.AuthException;
 import com.kcd.repository.otp.KcdOtpRepository;
 import com.kcd.service.enums.RedisTTLEnum;
+import com.kcd.service.otp.dto.KcdOptDto;
 import com.kcd.service.otp.dto.KcdOtpVerficationDto;
-import com.kcd.service.user.dto.UserDto;
 import io.micrometer.common.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +24,8 @@ public class KcdOtpAuthServiceImpl implements KcdOtpAuthService {
     private final SecureRandom random = new SecureRandom();
 
     @Override
-    public Map<String, String> issueOtp(UserDto userDto) {
-        Map<String, String> otpMap = this.generateOtpMap(userDto);
+    public Map<String, String> issueOtp(KcdOptDto kcdOptDto) {
+        Map<String, String> otpMap = this.generateOtpMap(kcdOptDto);
         this.saveOtpToRedis(otpMap);
         return otpMap;
     }
@@ -50,9 +50,9 @@ public class KcdOtpAuthServiceImpl implements KcdOtpAuthService {
         return this.kcdOtpRepository.deleteOtp(id);
     }
 
-    private Map<String, String> generateOtpMap(UserDto userDto) {
+    private Map<String, String> generateOtpMap(KcdOptDto kcdOptDto) {
         Map<String, String> otpMap = new HashMap<>();
-        String otpKey = StringUtils.isBlank(userDto.getEmail()) ? userDto.getMobile() : userDto.getEmail();
+        String otpKey = StringUtils.isBlank(kcdOptDto.getEmail()) ? kcdOptDto.getMobile() : kcdOptDto.getEmail();
         String otpValue = this.generateOTP();
         otpMap.put("id", otpKey);
         otpMap.put("otp", otpValue);
