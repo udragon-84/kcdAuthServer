@@ -1,6 +1,7 @@
 package com.kcd.api;
 
 import com.kcd.api.response.KcdAuthResponse;
+import com.kcd.common.exception.AuthenticationException;
 import com.kcd.service.user.UserService;
 import com.kcd.service.user.dto.UserDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,8 +57,7 @@ public class KcdUserController {
     public KcdAuthResponse<UserDto> getKcdUserProfile(HttpServletRequest request) {
         String sessionToken = Optional.ofNullable(request.getSession().getAttribute("ID"))
                 .map(Object::toString)
-                .orElseThrow(() -> new RuntimeException("자신의 정보는 로그인 후 조회 가능합니다."));
-        // TODO 적합한 Exception 처리 할 것
+                .orElseThrow(() -> new AuthenticationException("자신의 정보는 로그인 후 조회 가능합니다."));
         return new KcdAuthResponse<>(this.userService.getKcdUserProfile(sessionToken));
     }
 }

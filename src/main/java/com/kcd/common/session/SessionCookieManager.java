@@ -59,4 +59,8 @@ public class SessionCookieManager {
         response.addCookie(jwtCookie);
         log.info("SessionCookieManager.invalidateSessionAndCookie: 쿠키 삭제 완료");
     }
+
+    public boolean isSessionTokenValid(String token) {
+        return this.jwtTokenProvider.validationToken(token);
+    }
 }

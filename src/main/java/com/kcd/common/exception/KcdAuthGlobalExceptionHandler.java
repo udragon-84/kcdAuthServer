@@ -63,6 +63,24 @@ public class KcdAuthGlobalExceptionHandler {
     }
 
     /**
+     * 로그인 인증 관련 Exception 처리 핸들러
+     * @param ex auth 도메인 에러 정보
+     * @return {@link ResponseEntity<KcdAuthResponse>}
+     */
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<KcdAuthResponse<String>> authenticationHandleException(AuthenticationException ex) {
+        log.error("KcdAuthGlobalExceptionHandler.authenticationHandleException:", ex);
+        KcdAuthResponse<String> response = new KcdAuthResponse<>(
+                Boolean.FALSE,  // 실패 응답
+                HttpStatus.UNAUTHORIZED,  // 상태 코드 401
+                HttpStatus.UNAUTHORIZED.value(),
+                "KcdAuthServer AuthenticationException Error",  // 메시지
+                ex.getMessage()  // 에러 세부 정보
+        );
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
      * 회원 중복 에러 Exception 처리 핸들러
      * @param ex auth 도메인 에러 정보
      * @return {@link ResponseEntity<KcdAuthResponse>}

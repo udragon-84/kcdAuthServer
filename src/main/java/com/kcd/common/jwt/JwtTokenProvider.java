@@ -60,7 +60,6 @@ public class JwtTokenProvider {
 
     public boolean validationToken(String token) {
         try {
-            // SecretKeySpec을 사용하여 Key 객체 생성
             Key key = new SecretKeySpec(jwtTokenSecret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
             Jwts.parserBuilder().setSigningKey(key)
                     .build()

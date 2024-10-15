@@ -1,6 +1,7 @@
 package com.kcd.service.login;
 
 import com.kcd.common.exception.AuthException;
+import com.kcd.common.exception.AuthenticationException;
 import com.kcd.service.login.dto.AuthLoginDto;
 import com.kcd.service.user.UserService;
 import com.kcd.service.user.dto.UserDto;
@@ -31,11 +32,11 @@ public class AuthLoginServiceImpl implements AuthLoginService {
                 this.userService.findByMobile(authLoginDto.getLoginId());
 
         if (Objects.isNull(userDto)) {
-            throw new AuthException(String.format("로그인 Id %s 정보를 찾을 수 없습니다.", authLoginDto.getLoginId()));
+            throw new AuthenticationException(String.format("로그인 Id %s 정보를 찾을 수 없습니다.", authLoginDto.getLoginId()));
         }
 
         if (!authLoginDto.getPassword().equals(userDto.getPassword())) {
-            throw new AuthException("비밀번호가 일치하지 않습니다.");
+            throw new AuthenticationException("비밀번호가 일치하지 않습니다.");
         }
 
         return userDto;
