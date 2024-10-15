@@ -1,12 +1,13 @@
 package com.kcd.service.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kcd.common.encrypt.Aes128Encryptor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
-
 import java.time.LocalDateTime;
 
 @Builder
@@ -36,6 +37,7 @@ public class UserDto extends Aes128Encryptor {
     @Email(message = "이메일 형식을 올바르게 입력하여 주십시요.")
     private String email;   // 이메일로 점유인증 하는 경우
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // 패스워드 필드를 JSON 응답에서 제외
     @Schema(description = "회원 패스워드", example = "*********")
     @NotBlank(message = "회원 비밀번호를 입력하여 주십시요.")
     private String password;   // 이메일로 점유인증 하는 경우
@@ -86,5 +88,4 @@ public class UserDto extends Aes128Encryptor {
         this.gender = this.processField(this.gender, isEncrypt);
         this.nationality = this.processField(this.nationality, isEncrypt);
     }
-
 }

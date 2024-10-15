@@ -5,6 +5,7 @@ import com.kcd.common.jwt.JwtTokenProvider;
 import com.kcd.repository.user.UsersRepository;
 import com.kcd.service.user.convert.UserConverter;
 import com.kcd.service.user.dto.UserDto;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,6 @@ public class UserServiceImpl implements UserService {
     public UserDto findByEmailOrMobile(String encryptEmail, String encryptMobile) {
         return this.usersRepository.findByEmailOrMobile(encryptEmail, encryptMobile)
                 .map(UserConverter::toDomain)
-                .stream()
-                .peek(UserDto::decryptFields)
-                .findAny()
                 .orElse(null);
     }
 
@@ -54,11 +52,31 @@ public class UserServiceImpl implements UserService {
     public UserDto getKcdUserProfile(String sessionToken) {
         String userId = jwtTokenProvider.getSubject(sessionToken);
         log.info("UserServiceImpl.getKcdUserProfile userId: {}", userId);
+
+        Claims claims = jwtTokenProvider.getAllClaims(sessionToken);
+        log.info("mobile: {}", claims.get("mobile").toString());
+
         return this.usersRepository.findById(Long.parseLong(userId))
                 .map(UserConverter::toDomain)
                 .stream()
                 .peek(UserDto::decryptFields)
                 .findAny()
+                .orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDto findByEmail(String encryptEmail) {
+        return this.usersRepository.findByEmail(encryptEmail)
+                .map(UserConverter::toDomain)
+                .orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDto findByMobile(String encryptMobile) {
+        return this.usersRepository.findByMobile(encryptMobile)
+                .map(UserConverter::toDomain)
                 .orElse(null);
     }
 

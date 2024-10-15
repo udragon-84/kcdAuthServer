@@ -9,6 +9,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Date;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -18,8 +19,9 @@ public class JwtTokenProvider {
     private String jwtTokenSecret;
 
     // JWT 토큰 생성
-    public String createToken(String id) {
-        Claims claims = Jwts.claims().setSubject(id);
+    public String createToken(Map<String, Object> claimsMaps) {
+        Claims claims = Jwts.claims().setSubject(claimsMaps.get("id").toString());
+        claims.putAll(claimsMaps);
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + 20 * 60 * 1000); // 20분 유효
@@ -44,6 +46,16 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)            // 토큰 파싱 및 서명 검증
                 .getBody()
                 .getSubject();                    // 사용자 ID 추출
+    }
+
+    // JWT 토큰에서 저장된 사용자 전체 값 추출 usage: getAllClaims(mobile).get("mobile");
+    public Claims getAllClaims(String token) {
+        Key key = new SecretKeySpec(jwtTokenSecret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token) // 토큰 파싱 및 서명 검증
+                .getBody();// 모든 Claims 반환
     }
 
     public boolean validationToken(String token) {

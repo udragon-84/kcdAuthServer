@@ -51,11 +51,10 @@ public class KcdUserController {
         return new KcdAuthResponse<>(this.userService.registerUser(userDto));
     }
 
-    @PreAuthorize("hasRole('USER')")
     @GetMapping("/profile")
     @Operation(summary = "로그인 후 자신의 정보 조회 Api", description = "로그인 후 자신의 정보 조회 Api")
     public KcdAuthResponse<UserDto> getKcdUserProfile(HttpServletRequest request) {
-        String sessionToken = Optional.ofNullable(request.getSession().getAttribute("KCD_SESSION_TOKEN"))
+        String sessionToken = Optional.ofNullable(request.getSession().getAttribute("ID"))
                 .map(Object::toString)
                 .orElseThrow(() -> new RuntimeException("자신의 정보는 로그인 후 조회 가능합니다."));
         // TODO 적합한 Exception 처리 할 것

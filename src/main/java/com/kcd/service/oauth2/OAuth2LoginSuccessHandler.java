@@ -4,6 +4,7 @@ import com.kcd.common.session.SessionCookieManager;
 import com.kcd.service.oauth2.dto.KakaoOAuth2ResponseDto;
 import com.kcd.service.user.UserService;
 import com.kcd.service.user.dto.UserDto;
+import com.kcd.service.user.dto.UserJwtClaimsGenerator;
 import jakarta.servlet.ServletException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,9 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         UserDto userDto = this.userService.findByEmailOrMobile(kakaoOAuth2ResponseDto.getEmail(), kakaoOAuth2ResponseDto.getPhoneNumber());
         // 2. 회원이 있을 경우 로그인 처리 (jwt 토큰 기반 세션 생성 및 쿠키 생성 그리고 메인 페이지 이동)
         if (Objects.nonNull(userDto) && this.isUser(oAuth2User)) {
-            this.sessionCookieManager.processSessionAndCookie(String.valueOf(userDto.getId()), request, response);
+            UserJwtClaimsGenerator userJwtClaimsGenerator = new UserJwtClaimsGenerator(userDto);
+            this.sessionCookieManager.processSessionAndCookie(userJwtClaimsGenerator, request, response);
+
             getRedirectStrategy().sendRedirect(request, response, "/defaultMain.html");
         } else {
             // 3. 회원이 없는 경우 회원가입 페이지로 이동
