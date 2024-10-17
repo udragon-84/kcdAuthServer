@@ -66,8 +66,7 @@ public class KcdOtpAuthServiceImpl implements KcdOtpAuthService {
     }
 
     private String generateOTP() {
-        int otp = random.nextInt(900000) + 100000; // 6자리 OTP 생성
-        return String.valueOf(otp);
+        return String.format("%06d", random.nextInt(1000000));
     }
 
 }
